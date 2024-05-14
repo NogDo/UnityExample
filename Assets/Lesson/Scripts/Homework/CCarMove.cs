@@ -24,9 +24,11 @@ public class CCarMove : MonoBehaviour
     {
         if (isMove)
         {
+            // AddRelativeForce를 쓰는 것이 유지보수와 성능면에서 더 좋다!
             rb.AddRelativeForce(Vector3.forward * fMovePower);
+            //rb.AddForce(transform.forward * fMovePower);
 
-            for(int i = 0; i < gameObject_Wheel.Length; i++)
+            for (int i = 0; i < gameObject_Wheel.Length; i++)
             {
                 gameObject_Wheel[i].transform.Rotate(Vector3.right * fRotaeSpeed * Time.deltaTime);
             }
