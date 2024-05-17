@@ -1,6 +1,6 @@
 //#define EXAMPLE_TYPE_CLASS
-#define EXAMPLE_TYPE_METHOD
-//#define EXAMPLE_TYPE_PROPERTY
+//#define EXAMPLE_TYPE_METHOD
+#define EXAMPLE_TYPE_PROPERTY
 
 using System.Collections;
 using System.Collections.Generic;
@@ -75,6 +75,30 @@ using UnityEngine;
 초기화 되지 않은 변수의 참조값을 전달하는 것도 가능하다.
 
 
+▶ C# 프로퍼티
+
+- 객체의 속해 있는 필드에 안전하게 접근 / 제어하기 위한 접근자 함수를 뜻한다. (역할을 한다.)
+    ㄴ Get / Set
+
+- 기존에 지니고 있던 Getter / Setter 함수를 좀더 편리하게 이용하기 위해 등장한 문법
+    ㄴ 프로퍼티를 사용하게 되면 코드를 안전하게 관리할 수 있으며 + 편리성에 대한 이점 또한 얻을 수 있다.
+
+
+º C# 언어 프로퍼티의 특징
+
+- C# 언어는 프로퍼티를 통해서 간단하게 접근자 함수를 만드는 것이 가능하다.
+    ㄴ 단, 일반적으로 프로퍼티는 멤버 변수와 별개이기 때문에 프로퍼티 안에서 데이터를 조작하기 위한 멤버 변수가 필요하다.
+
+- 또한 C# 언어에서는 프로퍼티를 사용할 때 내부 구현이 단순할 경우 이를 자동적으로 정의해주는 오토 프로퍼티기능을 제공한다.
+오토 프로퍼티를 사용하면 프로퍼티 로직을 단순하게 할 수 있으며, 해당 프로퍼티를 통해 제어할 변수를 별도로 만들지 않아도 된다.
+
+- C# 언어는 프로퍼티를 이용해서 일회성 데이터를 생성하는 것이 가능하다.
+    ㄴ 이를 무명 타입 데이터라고 한다.
+    ㄴ 무명 데이터는 기본적으로 데이터의 이름이 존재하지 않기 때문에 반드시 var를 통해서 할당을 해야 한다.
+
+- 프로퍼티를 사용해서 클래스를 초기화 하는것도 가능하며 이는 구조체에도 동일하게 적용이 된다.
+
+- 마지막으로 C#의 프로퍼티는 virtual + override 키워드를 통해서 재정의 매커니즘을 구현할 수 있다.
 
  
 */
@@ -149,6 +173,65 @@ public class Example_05 : MonoBehaviour
         Debug.LogFormat("SumValueA : {0}, SumValueB : {1}", nSumValueA, nSumValueB);
 
 #else
+
+        // 둘의 실행 속도는 차이가 난다.
+        // inline...
+        CWidget WidgetA = new CWidget();
+        WidgetA.Value = 10;
+        WidgetA.String = "Hell Fire";
+        WidgetA.SetString("Help, Me");
+
+        CWidget WidgetB = new CWidget()
+        {
+            Value = 20,
+            String = "Help"
+        };
+
+        string oString = "";
+        var oStringBuilder = new System.Text.StringBuilder();
+
+        /*
+        String VS StringBuilder (push_back vs emplace_back의 관계)
+
+        String : 읽기가 많은 경우에 적합하다.
+            ㄴ 새로운 문자열을 추가할 때 복사, 이동이 반복횟수만큼 수행되기 때문에 느림
+        
+        StringBuilder : 객체의 참조 값을 힙에서 관리한다. (추가, 삽입, 삭제)
+            ㄴ 새로운 객체를 만들지 않고 문자열을 수정하고 싶을때 사용한다.
+            ㄴ 블럭 단위로 메모리 공간을 잡기 때문에 삽입에 용이하다. (emplace_back)
+
+        EX)
+        - 기존 + 연산자를 통해 문자열 연결을 하고 싶다. (매우 느림)
+            ㄴ 문자열 집합(싱글, 멀티, 유니코드)을 확인하고 가져오기 때문
+            ㄴ Temp를 만들어 값을 복사함
+         
+        */
+
+        for (int i = 0; i < 100; ++i)
+        {
+            // ToString() : 해당 문자열에 대한 String 객체를 생성해서 반환
+            oStringBuilder.Append((i + 1).ToString());
+        }
+
+        oString = oStringBuilder.ToString();
+
+        // 10, Hell Fire, Help Me
+        Debug.LogFormat("위젯 정보 : {0}, {1}, {2}", WidgetA.Value, WidgetA.String, WidgetA.GetString());
+        // 20, Help, 
+        Debug.LogFormat("위젯 정보 : {0}, {1}, {2}", WidgetB.Value, WidgetB.String, WidgetB.GetString());
+
+
+        // 무명 : 이름이 없는 형식
+        // ㄴ 무명 형식은 선언과 동시에 인스턴스를 할당한다.
+        // ㄴ 무명 형식은 만들고 나서 사용하지 않을 때 유용하나 무명 형식의 프로퍼티에 할당된 값은 변경이 불가능 하다.
+        // ㄴ 한번 생성된 인스턴스는 읽기만 가능
+        // 쿨 코딩을 하겠다는 뜻, new를 사용했기 때문에 GC에서 관리하라는 뜻
+        // 1회성 데이터에 사용하는 것
+        var oAnonymousData = new
+        {
+            Value = 10,
+            String = "Help"
+        };
 
 #endif
     }
@@ -342,6 +425,63 @@ public class Example_05 : MonoBehaviour
     
 
 #else
+
+    // 프로퍼티는 단일로 쓰기에는 애매하다.
+    // 보통은 클래스와 묶어서 가는 경우가 많다.
+    class CWidget
+    {
+        private int m_nValue = 0;
+        private string m_oString = "";
+
+        public int Value
+        {
+            get
+            {
+                return m_nValue;
+            }
+
+            set
+            {
+                // value : 전달 받은 인자값을 의미한다.
+                m_nValue = value;
+            }
+        }
+
+
+        // 오토 프로퍼티
+        // ㄴ 코드를 간결하게 해주며 접근자에 조건이 없는 경우 사용을 할 수 있다.
+        // ㄴ 값 변경이 안되도록 private 지정자를 추가하거나 초기값이 필요한 경우 초기값까지 할당 가능
+        // ㄴ const 보다는 좀더 유동적이다. (private 접근 제어 지시자를 바꿀 수도 있음)
+        public int CNumber
+        {
+            get; private set;
+        } = 100;
+
+        public string String
+        {
+            get; set;
+        }
+
+        public int GetValue()
+        {
+            return m_nValue;
+        }
+
+        public string GetString()
+        {
+            return m_oString;
+        }
+
+        public void SetValue(int nValue)
+        {
+            m_nValue = nValue;
+        }
+
+        public void SetString(string str)
+        {
+            m_oString = str;
+        }
+    }
 
 #endif
 }
